@@ -65,7 +65,7 @@ export function InicioSesion() {
     try {
       // credentialResponse.credential es el token JWT que entrega Google
       const respuesta = await fetch(
-        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/google-login",
+        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/google",
         {
           method: "POST",
           headers: {
@@ -87,8 +87,18 @@ export function InicioSesion() {
     }
   };
 
-  return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
+ return (
+  <div className="d-flex vh-100">
+    {/* Lado izquierdo: formulario */}
+    <div
+      style={{
+        flex: "0 0 30%", // 30% ancho
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "white",
+      }}
+    >
       <div className="card p-4 shadow" style={{ width: "350px" }}>
         <h2 className="text-center mb-4">Iniciar Sesión</h2>
 
@@ -130,5 +140,18 @@ export function InicioSesion() {
         </p>
       </div>
     </div>
-  );
+
+    {/* Lado derecho: imagen */}
+    <div
+      style={{
+        flex: "0 0 70%", // 70% ancho
+        backgroundImage: "url('/map.jpg')", // si está en public, solo usa '/map.jpg'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    ></div>
+  </div>
+);
+
+
 }

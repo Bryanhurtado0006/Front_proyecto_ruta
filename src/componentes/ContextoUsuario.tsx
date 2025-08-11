@@ -1,23 +1,27 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 
 export const ContextoUsuario = createContext();
+// contexto global, guardamos y compartimos info del usuario y su token
 
 export function ProveedorUsuario({ children }) {
-    const [usuario, setUsuario] = useState(null);
-    const [token, setToken] = useState(null);
-
-    // Al cargar la app, revisa si hay token y usuario guardados
-    useEffect(() => {
-        const usuarioGuardado = localStorage.getItem("usuario");
-        const tokenGuardado = localStorage.getItem("token");
-
-        if (usuarioGuardado && tokenGuardado) {
-            setUsuario(JSON.parse(usuarioGuardado));
-            setToken(tokenGuardado);
+    // guardamos name, email etc del user
+    const [usuario, setUsuario] = useState(() => {
+        try {
+            const usuarioGuardado = localStorage.getItem("usuario");
+            return usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+        } catch (e) {
+            console.error("Error leyendo usuario del localStorage", e);
+            return null;
         }
-    }, []);
+    });
 
-    // Iniciar sesión o registrar usuario (guardar datos y token)
+    // recibimos el token del back para validar las peticiones
+    const [token, setToken] = useState(() => {
+        return localStorage.getItem("token") || null;
+    });
+
+    // guardamos en memoria (useState) y en el almacenamiento (LocalStorage) user y token
+    // después de un logueo exitoso
     const iniciarSesion = (datosUsuario, tokenRecibido) => {
         setUsuario(datosUsuario);
         setToken(tokenRecibido);
