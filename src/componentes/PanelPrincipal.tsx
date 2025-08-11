@@ -36,10 +36,10 @@ export function PanelPrincipal() {
             return;
         }
 
-        // 🚩 Simulación de coordenadas aleatorias cerca de Bogotá
+        // 🚩 Simulación de coordenadas aleatorias cerca de Popayán
         const randomCoord = () => [
-            4.6 + (Math.random() - 0.5) * 0.1,
-            -74.08 + (Math.random() - 0.5) * 0.1
+            2.4448  + (Math.random() - 0.5) * 0.05,
+            -76.6147  + (Math.random() - 0.5) * 0.05
         ];
 
         const coordO = randomCoord();
@@ -110,7 +110,7 @@ export function PanelPrincipal() {
                     {/* Mapa dinámico */}
                     <div style={{ flex: 1 }}>
                         <MapContainer
-                            center={coordsOrigen || [4.6097, -74.0817]}
+                            center={coordsOrigen || [2.4448, -76.6147]}
                             zoom={13}
                             style={{ height: "100%", width: "100%" }}
                         >

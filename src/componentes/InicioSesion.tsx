@@ -12,34 +12,53 @@ export function InicioSesion() {
 
   // Login tradicional
   const manejarInicio = async (e) => {
-    e.preventDefault();
+  e.preventDefault(); // Evita que el formulario recargue la página
 
-    try {
-      const respuesta = await fetch(
-        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailUsuario: correo,
-            contrasenaUsuario: contrasena,
-          }),
-        }
-      );
-
-      if (!respuesta.ok) {
-        throw new Error("Credenciales incorrectas");
+  try {
+    const respuesta = await fetch(
+      "https://rutas-a7bdc4cbead4.herokuapp.com/auth/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailUsuario: correo,
+          contrasenaUsuario: contrasena,
+        }),
       }
+    );
 
-      const data = await respuesta.json();
-      iniciarSesion(data.usuario ?? { emailUsuario: correo }, data.token);
-      navigate("/home");
-    } catch (error) {
-      alert("Correo o contraseña incorrectos");
+    if (!respuesta.ok) {
+      throw new Error("Credenciales incorrectas");
     }
-  };
+
+    const data = await respuesta.json();
+
+    // Guardar usuario en el contexto con fallback seguro para nombreUsuario
+    iniciarSesion(
+      data.usuario
+        ? {
+            ...data.usuario,
+            nombreUsuario:
+              data.usuario.nombreUsuario ||
+              data.usuario.emailUsuario?.split("@")[0] ||
+              correo.split("@")[0] ||
+              "Usuario"
+          }
+        : {
+            emailUsuario: correo,
+            nombreUsuario: correo.split("@")[0] || "Usuario"
+          },
+      data.token
+    );
+
+    navigate("/home"); // Redirige al panel principal
+  } catch (error) {
+    alert("Correo o contraseña incorrectos");
+  }
+};
+
 
   // Login con Google
   const manejarGoogleLogin = async (credentialResponse) => {

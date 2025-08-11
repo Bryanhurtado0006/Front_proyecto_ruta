@@ -37,23 +37,9 @@ export function Registro() {
             }
 
             const data = await respuesta.json();
-            console.log("Registro exitoso:", data);
 
-            // Aquí guardamos usuario y token en el contexto
-            iniciarSesion( data.usuario ??
-                { 
-                    // igual que el login, mejor usemos los datos que me 
-                    // devuelvan en el backend, en vez de reconstruir el objeto
-                    nombres,
-                    apellidos,
-                    identificacion,
-                    nombreUsuario,
-                    emailUsuario
-                },
-                data.token // el token que devuelve el backend
-            );
+            iniciarSesion(data.usuario, data.token);
 
-            // Ir directo al dashboard
             navigate("/home");
         } catch (error) {
             console.error("Error:", error);
@@ -66,18 +52,50 @@ export function Registro() {
             <div className="card p-4 shadow" style={{ width: "350px" }}>
                 <h2 className="text-center mb-4">Registro</h2>
                 <form onSubmit={manejarRegistro}>
-                    <input className="form-control mb-3" placeholder="Nombres"
-                        value={nombres} onChange={(e) => setNombres(e.target.value)} required />
-                    <input className="form-control mb-3" placeholder="Apellidos"
-                        value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
-                    <input className="form-control mb-3" placeholder="Identificación"
-                        value={identificacion} onChange={(e) => setIdentificacion(e.target.value)} required />
-                    <input className="form-control mb-3" placeholder="Nombre de Usuario"
-                        value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} required />
-                    <input className="form-control mb-3" type="email" placeholder="Correo Electrónico"
-                        value={emailUsuario} onChange={(e) => setEmailUsuario(e.target.value)} required />
-                    <input className="form-control mb-3" type="password" placeholder="Contraseña"
-                        value={contrasenaUsuario} onChange={(e) => setContrasenaUsuario(e.target.value)} required />
+                    <input
+                        className="form-control mb-3"
+                        placeholder="Nombres"
+                        value={nombres}
+                        onChange={(e) => setNombres(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="form-control mb-3"
+                        placeholder="Apellidos"
+                        value={apellidos}
+                        onChange={(e) => setApellidos(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="form-control mb-3"
+                        placeholder="Identificación"
+                        value={identificacion}
+                        onChange={(e) => setIdentificacion(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="form-control mb-3"
+                        placeholder="Nombre de Usuario"
+                        value={nombreUsuario}
+                        onChange={(e) => setNombreUsuario(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="form-control mb-3"
+                        type="email"
+                        placeholder="Correo Electrónico"
+                        value={emailUsuario}
+                        onChange={(e) => setEmailUsuario(e.target.value)}
+                        required
+                    />
+                    <input
+                        className="form-control mb-3"
+                        type="password"
+                        placeholder="Contraseña"
+                        value={contrasenaUsuario}
+                        onChange={(e) => setContrasenaUsuario(e.target.value)}
+                        required
+                    />
                     <button type="submit" className="btn btn-primary w-100">
                         Registrarse
                     </button>
