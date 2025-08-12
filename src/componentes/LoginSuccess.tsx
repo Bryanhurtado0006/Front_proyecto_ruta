@@ -1,12 +1,13 @@
 // src/pages/LoginSuccess.tsx
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ContextoUsuario } from "./ContextoUsuario";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "https://rutas-a7bdc4cbead4.herokuapp.com";
+// const API_URL = import.meta.env.VITE_API_URL ?? "https://rutas-a7bdc4cbead4.herokuapp.com";
 
+const EFFECT_GUARD_KEY = "login_success_ran";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function decodeJwtPayload(token: string): any | null {
+function decodeJwtPayload(token: string){
   try {
     const base64 = token.split(".")[1];
     // compat URL-safe base64
@@ -21,8 +22,16 @@ export default function LoginSuccess() {
   const { search } = useLocation();
   const navigate = useNavigate();
   const { iniciarSesion } = useContext(ContextoUsuario);
+  const didRunRef = useRef(false);
 
   useEffect(() => {
+    if (didRunRef.current) return;           // bloquea re-ejecución en mismo montaje
+    didRunRef.current = true;
+
+    // bloqueo adicional contra StrictMode (nuevo montaje “fantasma”):
+    if (sessionStorage.getItem(EFFECT_GUARD_KEY) === "1") return;
+    sessionStorage.setItem(EFFECT_GUARD_KEY, "1");
+    
     const qs = new URLSearchParams(search);
     const token = qs.get("token");
 
@@ -52,7 +61,7 @@ export default function LoginSuccess() {
     let cancelled = false;
     (async () => {
       try {
-        const resp = await fetch(`${API_URL}/me`, {
+        const resp = await fetch(`http://localhost:6090/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!resp.ok) return; // si falla, mantén el provisional

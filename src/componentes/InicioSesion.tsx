@@ -62,36 +62,9 @@ export function InicioSesion() {
 
 
   // Login con Google
-<<<<<<< HEAD
   const manejarGoogleRedirect = () => {
     // inicia el flujo OAuth2 en el backend
-    window.location.href = `${API_URL}/oauth2/authorization/google`;
-=======
-  const manejarGoogleLogin = async (credentialResponse) => {
-    try {
-      // credentialResponse.credential es el token JWT que entrega Google
-      const respuesta = await fetch(
-        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/google",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tokenGoogle: credentialResponse.credential }),
-        }
-      );
-
-      if (!respuesta.ok) {
-        throw new Error("Error autenticando con Google");
-      }
-
-      const data = await respuesta.json();
-      iniciarSesion(data.usuario, data.token);
-      navigate("/home");
-    } catch (error) {
-      alert("Error al iniciar sesión con Google");
-    }
->>>>>>> a7ebe290645dad0a3aa87a780df7e3df0eddf1b6
+    window.location.href = `http://localhost:6090/oauth2/authorization/google`;
   };
 
  return (
