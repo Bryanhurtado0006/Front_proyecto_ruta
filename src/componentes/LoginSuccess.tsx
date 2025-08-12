@@ -3,7 +3,6 @@ import { useEffect, useContext, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ContextoUsuario } from "./ContextoUsuario";
 
-// const API_URL = import.meta.env.VITE_API_URL ?? "https://rutas-a7bdc4cbead4.herokuapp.com";
 
 const EFFECT_GUARD_KEY = "login_success_ran";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,12 +58,13 @@ export default function LoginSuccess() {
 
     // 4) En segundo plano, refina el perfil llamando /me (sin navegar otra vez)
     let cancelled = false;
+
     (async () => {
       try {
         const resp = await fetch(`http://localhost:6090/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!resp.ok) return; // si falla, mantén el provisional
+        if (!resp.ok) return;
         const me = await resp.json();
         if (cancelled) return;
         iniciarSesion(
@@ -74,8 +74,8 @@ export default function LoginSuccess() {
           },
           token
         );
-      } catch {
-        // ignora: mantén provisional
+      } catch (error) {
+        console.error("Error al obtener perfil:", error);
       }
     })();
 

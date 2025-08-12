@@ -31,7 +31,6 @@ export default function App() {
                                 </RutasProtegidas>
                             }
                         />
-
                         {/* Redirección por defecto */}
                         <Route path="*" element={<Navigate to="/login" replace />} />
                     </Routes>
