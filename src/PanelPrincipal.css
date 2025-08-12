@@ -1,0 +1,180 @@
+:root {
+  --bs-primary: #2e7d32;
+  --bs-primary-dark: #1b5e20;
+  --bs-accent: #81c784;
+  --bs-light-bg: #f5f7fa;
+  --bs-white: #ffffff;
+  --bs-text-dark: #212529;
+  --bs-shadow-light: rgba(0, 0, 0, 0.08);
+  --bs-shadow-strong: rgba(0, 0, 0, 0.15);
+  --bs-border-radius: 0.75rem;
+  --bs-transition-speed: 0.3s;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bs-light-bg);
+  color: var(--bs-text-dark);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--bs-light-bg);
+  overflow: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(90deg, var(--bs-primary), var(--bs-primary-dark));
+  color: var(--bs-white);
+  box-shadow: 0 4px 12px var(--bs-shadow-strong);
+  font-weight: 600;
+  font-size: 1.25rem;
+  user-select: none;
+  z-index: 10;
+}
+
+.logout-button {
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  background-color: var(--bs-accent);
+  border: none;
+  border-radius: var(--bs-border-radius);
+  color: var(--bs-white);
+  font-weight: 600;
+  box-shadow: 0 4px 8px var(--bs-shadow-light);
+  transition: background-color var(--bs-transition-speed) ease, box-shadow var(--bs-transition-speed) ease;
+  letter-spacing: 0.03em;
+}
+
+.logout-button:hover,
+.logout-button:focus {
+  background-color: var(--bs-primary-dark);
+  box-shadow: 0 6px 14px var(--bs-shadow-strong);
+  outline: none;
+}
+
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 2rem;
+  overflow-y: auto;
+  background-color: var(--bs-light-bg);
+}
+
+.planner-section {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--bs-white);
+  border-radius: var(--bs-border-radius);
+  box-shadow: 0 8px 20px var(--bs-shadow-light);
+  padding: 1.25rem 1.5rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.card:hover,
+.card:focus-within {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px var(--bs-shadow-strong);
+  border-color: var(--bs-primary);
+}
+
+.planner-section input,
+.planner-section button {
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--bs-border-radius) / 1.5);
+  border: 1.5px solid #ccc;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.planner-section input:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 3px var(--bs-accent);
+  outline: none;
+}
+
+.planner-section button {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 12px var(--bs-primary-dark);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.planner-section button:hover,
+.planner-section button:focus {
+  background-color: var(--bs-primary-dark);
+  box-shadow: 0 6px 18px var(--bs-primary-dark);
+  outline: none;
+}
+
+.map-container {
+  flex: 1;
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+  box-shadow: 0 8px 24px var(--bs-shadow-light);
+  background-color: var(--bs-white);
+  display: flex;
+  flex-direction: column;
+}
+
+.map {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--bs-border-radius);
+  object-fit: cover;
+}
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 320px;
+}
+
+.sidebar-card {
+  background: var(--bs-white);
+  border-radius: var(--bs-border-radius);
+  box-shadow: 0 8px 24px var(--bs-shadow-light);
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.historial-item {
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+  border-radius: calc(var(--bs-border-radius) / 2);
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 0 0 0 1px #ddd;
+}
+
+.historial-item:hover,
+.historial-item:focus {
+  background-color: #e8f5e9;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+  outline: none;
+}

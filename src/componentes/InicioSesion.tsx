@@ -62,13 +62,50 @@ export function InicioSesion() {
 
 
   // Login con Google
+<<<<<<< HEAD
   const manejarGoogleRedirect = () => {
     // inicia el flujo OAuth2 en el backend
     window.location.href = `${API_URL}/oauth2/authorization/google`;
+=======
+  const manejarGoogleLogin = async (credentialResponse) => {
+    try {
+      // credentialResponse.credential es el token JWT que entrega Google
+      const respuesta = await fetch(
+        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/google",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tokenGoogle: credentialResponse.credential }),
+        }
+      );
+
+      if (!respuesta.ok) {
+        throw new Error("Error autenticando con Google");
+      }
+
+      const data = await respuesta.json();
+      iniciarSesion(data.usuario, data.token);
+      navigate("/home");
+    } catch (error) {
+      alert("Error al iniciar sesión con Google");
+    }
+>>>>>>> a7ebe290645dad0a3aa87a780df7e3df0eddf1b6
   };
 
-  return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
+ return (
+  <div className="d-flex vh-100">
+    {/* Lado izquierdo: formulario */}
+    <div
+      style={{
+        flex: "0 0 30%", // 30% ancho
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "white",
+      }}
+    >
       <div className="card p-4 shadow" style={{ width: "350px" }}>
         <h2 className="text-center mb-4">Iniciar Sesión</h2>
 
@@ -118,5 +155,18 @@ export function InicioSesion() {
         </p>
       </div>
     </div>
-  );
+
+    {/* Lado derecho: imagen */}
+    <div
+      style={{
+        flex: "0 0 70%", // 70% ancho
+        backgroundImage: "url('/map.jpg')", // si está en public, solo usa '/map.jpg'
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    ></div>
+  </div>
+);
+
+
 }
