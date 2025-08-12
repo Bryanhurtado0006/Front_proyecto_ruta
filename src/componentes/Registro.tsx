@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ContextoUsuario } from "./ContextoUsuario";
 
@@ -16,7 +16,7 @@ export function Registro() {
         e.preventDefault();
 
         try {
-            const respuesta = await fetch("https://rutas-a7bdc4cbead4.herokuapp.com/auth/register", {
+            const respuesta = await fetch("http://localhost:6090/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -17,7 +17,7 @@ export function InicioSesion() {
 
     try {
       const respuesta = await fetch(
-        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/login",
+        "http://localhost:6090/auth/login",
         {
           method: "POST",
           headers: {
