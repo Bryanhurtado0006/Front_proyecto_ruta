@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MapContainer,
   TileLayer,
@@ -125,6 +126,8 @@ export function PanelPrincipal() {
   const [timeMin, setTimeMin] = useState(null);
   const [modo, setModo] = useState("🚶 Caminata");
   const [loadingRoute, setLoadingRoute] = useState(false);
+  const navigate = useNavigate();
+
 
   const modoToProfile = (m) =>
     m.toLowerCase().includes("bici")
@@ -252,6 +255,7 @@ export function PanelPrincipal() {
 
   const POPAYAN_LAT = 2.4448;
   const POPAYAN_LNG = -76.66147;
+ 
 
   return (
     <div className="dashboard-container">
@@ -353,6 +357,10 @@ export function PanelPrincipal() {
                 </li>
               ))}
             </ul>
+
+            <button>Guardar</button>
+            <button onClick={()=>navigate("/ranking")}>Ver ranking</button>
+            <h2>ranking de {usuario?.nombreUsuario || "Usuario invitado"}</h2>
           </div>
         </aside>
       </main>
