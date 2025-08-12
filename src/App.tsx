@@ -6,6 +6,7 @@ import { Registro } from "./componentes/Registro";
 import { InicioSesion } from "./componentes/InicioSesion";
 import { PanelPrincipal } from "./componentes/PanelPrincipal";
 import LoginSuccess from "./componentes/LoginSuccess";
+import Ranking from "./componentes/Ranking";
 
 function RutasProtegidas({ children }) {
     const { usuario } = useContext(ContextoUsuario);
@@ -21,6 +22,8 @@ export default function App() {
                         <Route path="/register" element={<Registro />} />
                         <Route path="/login" element={<InicioSesion />} />
                         <Route path="/login/success" element={<LoginSuccess />} />
+                        
+
 
                         {/* Ruta protegida */}
                         <Route
@@ -31,6 +34,16 @@ export default function App() {
                                 </RutasProtegidas>
                             }
                         />
+                        <Route
+  path="/ranking"
+  element={
+    <RutasProtegidas>
+      <Ranking />
+    </RutasProtegidas>
+  }
+/>
+
+                        
 
                         {/* Redirección por defecto */}
                         <Route path="*" element={<Navigate to="/login" replace />} />
