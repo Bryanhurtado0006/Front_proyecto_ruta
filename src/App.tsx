@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Registro } from "./componentes/Registro";
 import { InicioSesion } from "./componentes/InicioSesion";
 import { PanelPrincipal } from "./componentes/PanelPrincipal";
+import LoginSuccess from "./componentes/LoginSuccess";
 
 function RutasProtegidas({ children }) {
     const { usuario } = useContext(ContextoUsuario);
@@ -14,27 +15,28 @@ function RutasProtegidas({ children }) {
 export default function App() {
     return (
         <GoogleOAuthProvider clientId="TU_CLIENT_ID_DE_GOOGLE">
-        <ProveedorUsuario>
-            <Router>
-                <Routes>
-                    <Route path="/register" element={<Registro />} />
-                    <Route path="/login" element={<InicioSesion />} />
+            <ProveedorUsuario>
+                <Router>
+                    <Routes>
+                        <Route path="/register" element={<Registro />} />
+                        <Route path="/login" element={<InicioSesion />} />
+                        <Route path="/login/success" element={<LoginSuccess />} />
 
-                    {/* Ruta protegida */}
-                    <Route
-                        path="/home"
-                        element={
-                            <RutasProtegidas>
-                                <PanelPrincipal />
-                            </RutasProtegidas>
-                        }
-                    />
+                        {/* Ruta protegida */}
+                        <Route
+                            path="/home"
+                            element={
+                                <RutasProtegidas>
+                                    <PanelPrincipal />
+                                </RutasProtegidas>
+                            }
+                        />
 
-                    {/* Redirección por defecto */}
-                    <Route path="*" element={<Navigate to="/login" replace />} />
-                </Routes>
-            </Router>
-        </ProveedorUsuario>
+                        {/* Redirección por defecto */}
+                        <Route path="*" element={<Navigate to="/login" replace />} />
+                    </Routes>
+                </Router>
+            </ProveedorUsuario>
 
         </GoogleOAuthProvider>
     );

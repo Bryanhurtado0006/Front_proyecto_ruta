@@ -9,7 +9,6 @@ export function Registro() {
     const [nombreUsuario, setNombreUsuario] = useState("");
     const [emailUsuario, setEmailUsuario] = useState("");
     const [contrasenaUsuario, setContrasenaUsuario] = useState("");
-
     const navigate = useNavigate();
     const { iniciarSesion } = useContext(ContextoUsuario);
 

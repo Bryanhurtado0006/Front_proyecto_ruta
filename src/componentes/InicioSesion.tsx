@@ -1,44 +1,45 @@
 import React, { useState, useContext } from "react";
 import { ContextoUsuario } from "./ContextoUsuario";
 import { useNavigate, Link } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
 
+
+
+const API_URL = "https://rutas-a7bdc4cbead4.herokuapp.com";
 export function InicioSesion() {
   const { iniciarSesion } = useContext(ContextoUsuario);
   const navigate = useNavigate();
-
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
 
   // Login tradicional
-  const manejarInicio = async (e) => {
-  e.preventDefault(); // Evita que el formulario recargue la página
+  const manejarInicio = async (e: React.FormEvent) => {
+    e.preventDefault(); // Evita que el formulario recargue la página
 
-  try {
-    const respuesta = await fetch(
-      "https://rutas-a7bdc4cbead4.herokuapp.com/auth/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailUsuario: correo,
-          contrasenaUsuario: contrasena,
-        }),
+    try {
+      const respuesta = await fetch(
+        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailUsuario: correo,
+            contrasenaUsuario: contrasena,
+          }),
+        }
+      );
+
+      if (!respuesta.ok) {
+        throw new Error("Credenciales incorrectas");
       }
-    );
 
-    if (!respuesta.ok) {
-      throw new Error("Credenciales incorrectas");
-    }
+      const data = await respuesta.json();
 
-    const data = await respuesta.json();
-
-    // Guardar usuario en el contexto con fallback seguro para nombreUsuario
-    iniciarSesion(
-      data.usuario
-        ? {
+      // Guardar usuario en el contexto con fallback seguro para nombreUsuario
+      iniciarSesion(
+        data.usuario
+          ? {
             ...data.usuario,
             nombreUsuario:
               data.usuario.nombreUsuario ||
@@ -46,45 +47,24 @@ export function InicioSesion() {
               correo.split("@")[0] ||
               "Usuario"
           }
-        : {
+          : {
             emailUsuario: correo,
             nombreUsuario: correo.split("@")[0] || "Usuario"
           },
-      data.token
-    );
+        data.token
+      );
 
-    navigate("/home"); // Redirige al panel principal
-  } catch (error) {
-    alert("Correo o contraseña incorrectos");
-  }
-};
+      navigate("/home"); // Redirige al panel principal
+    } catch (error) {
+      alert("Correo o contraseña incorrectos");
+    }
+  };
 
 
   // Login con Google
-  const manejarGoogleLogin = async (credentialResponse) => {
-    try {
-      // credentialResponse.credential es el token JWT que entrega Google
-      const respuesta = await fetch(
-        "https://rutas-a7bdc4cbead4.herokuapp.com/auth/google-login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tokenGoogle: credentialResponse.credential }),
-        }
-      );
-
-      if (!respuesta.ok) {
-        throw new Error("Error autenticando con Google");
-      }
-
-      const data = await respuesta.json();
-      iniciarSesion(data.usuario, data.token);
-      navigate("/home");
-    } catch (error) {
-      alert("Error al iniciar sesión con Google");
-    }
+  const manejarGoogleRedirect = () => {
+    // inicia el flujo OAuth2 en el backend
+    window.location.href = `${API_URL}/oauth2/authorization/google`;
   };
 
   return (
@@ -119,10 +99,18 @@ export function InicioSesion() {
         </form>
 
         <div className="my-3 d-flex justify-content-center">
-          <GoogleLogin
-            onSuccess={manejarGoogleLogin}
-            onError={() => alert("Error al iniciar sesión con Google")}
-          />
+          <button
+            type="button"
+            className="btn btn-outline-primary w-100"
+            onClick={manejarGoogleRedirect}
+          >
+            <img
+              alt="Google"
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              style={{ width: 18, marginRight: 8, verticalAlign: "text-bottom" }}
+            />
+            Ingresar con Google
+          </button>
         </div>
 
         <p className="text-center mt-3">
