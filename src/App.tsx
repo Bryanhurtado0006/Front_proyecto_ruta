@@ -22,8 +22,6 @@ export default function App() {
                         <Route path="/register" element={<Registro />} />
                         <Route path="/login" element={<InicioSesion />} />
                         <Route path="/login/success" element={<LoginSuccess />} />
-                        
-
 
                         {/* Ruta protegida */}
                         <Route
@@ -35,16 +33,13 @@ export default function App() {
                             }
                         />
                         <Route
-  path="/ranking"
-  element={
-    <RutasProtegidas>
-      <Ranking />
-    </RutasProtegidas>
-  }
-/>
-
-                        
-
+                            path="/ranking"
+                            element={
+                                <RutasProtegidas>
+                                    <Ranking />
+                                </RutasProtegidas>
+                            }
+                        />
                         {/* Redirección por defecto */}
                         <Route path="*" element={<Navigate to="/login" replace />} />
                     </Routes>
