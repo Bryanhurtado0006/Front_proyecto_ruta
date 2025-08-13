@@ -3,13 +3,23 @@ import React, { useState, useEffect, useContext } from "react";
 import { ContextoUsuario } from "./ContextoUsuario";
 import "../Ranking.css";
 
+type RankingItem = {
+  idUsuario: number;
+  nombreUsuario: string;
+  puntosTotales: number;
+};
+
 export default function Ranking() {
   const { usuario } = useContext(ContextoUsuario);
-  const [puntos, setPuntos] = useState(0);
   const [recompensa, setRecompensa] = useState("");
+  const [ranking, setRanking] = useState<RankingItem[]>([]);
+  const [puntos, setPuntos] = useState<number>(0);
+
+  const [cargando, setCargando] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   // Sistema de recompensas reales
-  const calcularRecompensa = (pts) => {
+  const calcularRecompensa = (pts: number) => {
     if (pts < 100) return "🔒 Aún sin recompensa. ¡Sigue acumulando!";
     if (pts >= 100 && pts < 150) return "🎁 5% de descuento en Éxito";
     if (pts >= 150 && pts < 200) return "🎁 10% de descuento en Jumbo";
@@ -18,59 +28,111 @@ export default function Ranking() {
   };
 
   useEffect(() => {
-    const ptsGuardados = parseInt(localStorage.getItem("puntosUsuario") || "0", 10);
-    setPuntos(ptsGuardados);
-    setRecompensa(calcularRecompensa(ptsGuardados));
+ 
+
+    (async () => {
+      try {
+        setCargando(true);
+        setError("");
+
+        const token = localStorage.getItem("token") ?? "";
+        const resp = await fetch("http://localhost:6090/user/ranking", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+
+        });
+
+        if (resp.status === 401 || resp.status === 403) {
+          throw new Error("No autorizado. Inicia sesión nuevamente.");
+        }
+        if (!resp.ok) {
+          const t = await resp.text().catch(() => "");
+          throw new Error(t || `Error HTTP ${resp.status}`);
+        }
+
+        const data: RankingItem[] = await resp.json();
+
+        // Si el backend no viene ordenado, ordénalo por puntos desc:
+        data.sort((a, b) => b.puntos - a.puntos);
+
+        setRanking(data);
+
+        // Actualiza UI del usuario logueado
+        const idRaw = localStorage.getItem("idUsuario");
+        const idUsuario = idRaw ? Number(idRaw) : null;
+
+        if (idUsuario != null) {
+          const yo = data.find((u) => u.idUsuario === idUsuario);
+          const pts = yo ? yo.puntos : Number(localStorage.getItem("puntosUsuario") || "0");
+          setPuntos(pts);
+          setRecompensa(calcularRecompensa(pts));
+        } else {
+          // fallback si no hay idUsuario en localStorage
+          const ptsGuardados = Number(localStorage.getItem("puntosUsuario") || "0");
+          setPuntos(ptsGuardados);
+          setRecompensa(calcularRecompensa(ptsGuardados));
+        }
+      } catch (e: any) {
+        setError(e?.message || "No se pudo cargar el ranking");
+      } finally {
+        setCargando(false);
+      }
+    })();
+
+  
   }, []);
 
+  // Si tienes usuario en contexto:
+  // const { usuario } = useAuth();
+  // const usuario = { nombreUsuario: localStorage.getItem("nombreUsuario") || "Invitado" };
+
+  if (cargando) return <div className="contenedor">Cargando ranking…</div>;
+  if (error) return <div className="contenedor">Error: {error}</div>;
+
+  // Posición del usuario en el ranking (si lo tienes)
+  const miId = Number(localStorage.getItem("idUsuario") || "0");
+  const miPosicion =
+    miId
+      ? ranking.findIndex((r) => r.idUsuario === miId) + 1
+      : null;
+
   return (
-  <div className="contenedor">
-    <header className="ranking-header">
-      <div className="ranking-header-left">
-        <h3>🌿 Eco-Ranking</h3>
-      </div>
-      <div className="ranking-header-right">
-        <span className="welcome-text">
-          Bienvenido, <strong>{usuario?.nombreUsuario || "Invitado"}</strong>
-        </span>
-        <span className="ranking-points">⭐ {puntos} pts</span>
-      </div>
-    </header>
+   <div className="rk-wrap">
+  <header className="rk-header">
+    <h2>🌿 Eco-Ranking</h2>
+    <div className="rk-user">
+      <span>Hola, <b>{usuario?.nombreUsuario || "Invitado"}</b></span>
+      <span className="rk-chip">⭐ {puntos} pts</span>
+    </div>
+  </header>
 
-    <main>
-      <div className="ranking-container">
-        <div className="ranking-user-info">
-          <div className="user-badge">
-            🏅
-            <span>{usuario?.nombreUsuario || "Usuario invitado"}</span>
-          </div>
-          <p className="user-subtitle">Tu posición en el ranking de EcoRuta</p>
-        </div>
-
-        <table className="ranking-table">
-          <thead>
-            <tr>
-              <th>Puntos</th>
-              <th>Recompensa</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{puntos}</td>
-              <td>{recompensa}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        {puntos >= 100 && (
-          <p className="ranking-note">
-            🎉 Felicidades, ya puedes reclamar tu recompensa. Contacta con soporte para recibir tu código.
-          </p>
-        )}
-      </div>
-    </main>
+  <div className="rk-card">
+    <table className="rk-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Usuario</th>
+          <th>Puntos</th>
+          <th>Recompensa</th>
+        </tr>
+      </thead>
+      <tbody>
+        {ranking.map((item, i) => (
+          <tr key={item.idUsuario}>
+            <td>{i + 1}</td>
+            <td>{item.nombreUsuario}</td>
+            <td>{item.puntosTotales}</td>
+            <td>{calcularRecompensa(item.puntosTotales)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
-);
+</div>
+  );
 
 
 }

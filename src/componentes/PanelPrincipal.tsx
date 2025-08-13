@@ -13,6 +13,7 @@ import { ContextoUsuario } from "./ContextoUsuario";
 import L from "leaflet";
 import "../PanelPrincipal.css";
 
+
 // Icon fix Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -20,6 +21,12 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://unpkg.com/leaflet/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet/dist/images/marker-shadow.png",
 });
+
+type JwtPayloadCustom = {
+  idUsuario?: number; // según cómo esté tu token
+  sub?: string;
+  // agrega aquí más campos si tu JWT los tiene
+};
 
 // Retos base
 const RETOS_BASE = [
@@ -31,6 +38,7 @@ const RETOS_BASE = [
 // Helpers
 const secondsToMin = (s) => Math.round((s || 0) / 60);
 const metersToKm = (m) => ((m || 0) / 1000);
+
 function haversineKm([lat1, lon1], [lat2, lon2]) {
   const toRad = (v) => (v * Math.PI) / 180;
   const R = 6371;
@@ -83,7 +91,7 @@ function ClickHandler({
               try {
                 const bounds = L.latLngBounds([coordsOrigen, latlng]);
                 map.fitBounds(bounds, { padding: [50, 50] });
-              } catch {}
+              } catch { }
             } else {
               const hk = haversineKm(coordsOrigen, latlng);
               setRouteCoords([coordsOrigen, latlng]);
@@ -115,7 +123,6 @@ function ClickHandler({
 
 export function PanelPrincipal() {
   const { usuario, cerrarSesion } = useContext(ContextoUsuario);
-
   const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
   const [historial, setHistorial] = useState([]);
@@ -133,8 +140,8 @@ export function PanelPrincipal() {
     m.toLowerCase().includes("bici")
       ? "cycling"
       : m.toLowerCase().includes("camin")
-      ? "walking"
-      : "driving";
+        ? "walking"
+        : "driving";
 
   // Gamificación - puntos y retos
   const [retos, setRetos] = useState(() => {
@@ -228,7 +235,7 @@ export function PanelPrincipal() {
         distancia: distKm.toFixed(2),
         modo: modo,
         tiempoEstimadoMin: timeMin,
-        tiempoEstimadoStr: timeMin >= 60 ? `${Math.floor(timeMin/60)}h ${timeMin%60}m` : `${timeMin}m`,
+        tiempoEstimadoStr: timeMin >= 60 ? `${Math.floor(timeMin / 60)}h ${timeMin % 60}m` : `${timeMin}m`,
         coordsOrigen,
         coordsDestino,
         routeCoords,
@@ -255,7 +262,67 @@ export function PanelPrincipal() {
 
   const POPAYAN_LAT = 2.4448;
   const POPAYAN_LNG = -76.66147;
- 
+
+  const getIdUsuario = () => {
+    const raw = localStorage.getItem("idUsuario");
+    return raw;
+  };
+
+  async function guardarCambios(event: MouseEvent<HTMLButtonElement>): Promise<void> {
+    event.preventDefault();
+
+    try {
+      // 1) Leer valores crudos del localStorage
+      const token = localStorage.getItem("token") ?? "";
+      const idUsuarioRaw = localStorage.getItem("idUsuario");
+      const puntosRaw = localStorage.getItem("puntosUsuario") ?? "0";
+
+      console.log("[DEBUG] token?", !!token, "idUsuarioRaw:", idUsuarioRaw, "puntosRaw:", puntosRaw);
+
+      // 2) Validar presencia de idUsuario
+      if (idUsuarioRaw === null) {
+        throw new Error("Falta 'idUsuario' en localStorage");
+      }
+      const idUsuario = Number(idUsuarioRaw);
+      if (!Number.isFinite(idUsuario)) {
+        throw new Error(`'idUsuario' inválido en localStorage: ${idUsuarioRaw}`);
+      }
+
+      // 3) Convertir puntos
+      const puntos = Number(puntosRaw);
+      if (!Number.isFinite(puntos)) {
+        throw new Error(`'puntosUsuario' inválido en localStorage: ${puntosRaw}`);
+      }
+
+      // 4) Preparar headers (si tu endpoint NO está protegido, puedes omitir Authorization)
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      // 5) Hacer el POST
+      const resp = await fetch(`http://localhost:6090/user/registerPuntos/${idUsuario}`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ puntos }), // tu DTO PuntosRequest { Double puntos; }
+      });
+
+      if (resp.status === 401 || resp.status === 403) {
+        throw new Error("No autorizado (401/403). Repite login o revisa el Bearer.");
+      }
+      if (!resp.ok) {
+        const t = await resp.text().catch(() => "");
+        throw new Error(t || `Error HTTP ${resp.status}`);
+      }
+
+      // tu backend devuelve String → usa text()
+      const data = await resp.text();
+      console.log("Cambios guardados:", data);
+      alert("Cambios guardados correctamente");
+      
+    } catch (error) {
+      console.error("Error al guardar cambios:", error);
+    }
+
+  }
 
   return (
     <div className="dashboard-container">
@@ -358,8 +425,8 @@ export function PanelPrincipal() {
               ))}
             </ul>
 
-            <button>Guardar</button>
-            <button onClick={()=>navigate("/ranking")}>Ver ranking</button>
+            <button onClick={guardarCambios}>Guardar</button>
+            <button onClick={() => navigate("/ranking")}>Ver ranking</button>
             <h2>ranking de {usuario?.nombreUsuario || "Usuario invitado"}</h2>
           </div>
         </aside>
