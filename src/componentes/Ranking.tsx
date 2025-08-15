@@ -20,11 +20,11 @@ export default function Ranking() {
 
   // Sistema de recompensas reales
   const calcularRecompensa = (pts: number) => {
-    if (pts < 100) return "🔒 Aún sin recompensa. ¡Sigue acumulando!";
-    if (pts >= 100 && pts < 150) return "🎁 5% de descuento en Éxito";
-    if (pts >= 150 && pts < 200) return "🎁 10% de descuento en Jumbo";
-    if (pts >= 200 && pts < 300) return "🎁 Bono de $20,000 en Alkosto";
-    if (pts >= 300) return "🎉 Bono de $50,000 en Éxito o Jumbo";
+    if (pts < 50) return "🔒 Aún sin recompensa. ¡Sigue acumulando!";
+    if (pts >= 50 && pts < 100) return "🎁 5% de descuento en Éxito";
+    if (pts >= 100 && pts < 150) return "🎁 10% de descuento en Jumbo";
+    if (pts >= 150 && pts < 200) return "🎁 Bono de $20,000 en Alkosto";
+    if (pts >= 250) return "🎉 Bono de $50,000 en Éxito o Jumbo";
   };
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function Ranking() {
         setError("");
 
         const token = localStorage.getItem("token") ?? "";
-        const resp = await fetch("http://localhost:6090/user/ranking", {
+        const resp = await fetch("https://rutas-a7bdc4cbead4.herokuapp.com/user/ranking", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

@@ -214,15 +214,33 @@ export function PanelPrincipal() {
     localStorage.setItem("retosDelDia", JSON.stringify(retosActualizados));
   };
 
-  // Cargar historial de localStorage
-  useEffect(() => {
-    const guardado = localStorage.getItem("historialRutas");
-    setHistorial(guardado ? JSON.parse(guardado) : []);
-  }, []);
+  // Cargar historial y ruta actual de localStorage
+useEffect(() => {
+  const guardadoHistorial = localStorage.getItem("historialRutas");
+  if (guardadoHistorial) {
+    setHistorial(JSON.parse(guardadoHistorial));
+  }
 
-  useEffect(() => {
-    localStorage.setItem("historialRutas", JSON.stringify(historial));
-  }, [historial]);
+  const guardadaRuta = localStorage.getItem("rutaActual");
+  if (guardadaRuta) {
+    const { coordsOrigen, coordsDestino, routeCoords, distKm, timeMin } = JSON.parse(guardadaRuta);
+    setCoordsOrigen(coordsOrigen);
+    setCoordsDestino(coordsDestino);
+    setRouteCoords(routeCoords);
+    setDistKm(distKm);
+    setTimeMin(timeMin);
+  }
+}, []);
+
+
+  // Guardar ruta actual en localStorage
+useEffect(() => {
+  localStorage.setItem(
+    "rutaActual",
+    JSON.stringify({ coordsOrigen, coordsDestino, routeCoords, distKm, timeMin })
+  );
+}, [coordsOrigen, coordsDestino, routeCoords, distKm, timeMin]);
+
 
   // Guardar ruta automáticamente
   useEffect(() => {
